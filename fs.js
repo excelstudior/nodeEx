@@ -11,8 +11,10 @@ const rl=readLine.createInterface({
 })
 
 rl.on('line',function(line){
-
     lineCount++;
+}).on('close',()=>{
     console.log(lineCount);
 })
+
+//run before finishing reading the file
 console.log(lineCount);
