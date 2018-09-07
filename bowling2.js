@@ -1,28 +1,28 @@
-var game= function (scores) {
+var game = function (scores) {
     this.frames = [];
-    this.rolls=[]
-    this.rollNumberCounter=0;
-    this.scores=scores;
-    this.scoreList=[];
-    this.grandTotal=0;
+    this.rolls = []
+    this.rollNumberCounter = 0;
+    this.scores = scores;
+    this.scoreList = [];
+    this.grandTotal = 0;
 }
 
-game.prototype.mapScoresToFrames=function(){
-    this.scores.map((score,i)=>{
+game.prototype.mapScoresToFrames = function () {
+    this.scores.forEach((score, i) => {
         i++;
-        var frame={}
+        var frame = {}
         // frame.total=score.split(' ').reduce((el1,el2)=>{
         //     return parseInt(el1)+parseInt(el2)
         // })
-        frame.rolls=score.split(' ').map((el)=>{
+        frame.rolls = score.split(' ').map((el) => {
             return parseInt(el)
         })
-        frame.total=frame.rolls.reduce((roll1,roll2)=>{
-            return roll1+roll2
+        frame.total = frame.rolls.reduce((roll1, roll2) => {
+            return roll1 + roll2
         })
-        frame.index=i;
-        frame.rolls.forEach((el,i)=>{
-            this.createRollsList(frame,el,i+1);
+        frame.index = i;
+        frame.rolls.forEach((el, i) => {
+            this.createRollsList(frame, el, i + 1);
         })
 
         this.frames.push(frame)
@@ -30,74 +30,89 @@ game.prototype.mapScoresToFrames=function(){
     return this
 }
 
-game.prototype.createRollsList=function(frame,score,index){
-    var roll={};
-    var properties={}
+game.prototype.createRollsList = function (frame, score, index) {
+    var roll = {};
+
     this.rollNumberCounter++;
-    var rollListIndex=this.rollNumberCounter;
-    roll[rollListIndex]=properties;
-    properties.frame=frame.index;
-    properties.frameScoreIndex=index
-    properties.value=score
-    
-    roll[rollListIndex].bonus=this.defineBonusType(frame,roll,rollListIndex)
+    roll.rollListIndex = this.rollNumberCounter;
+    roll.frame = frame.index;
+    roll.frameScoreIndex = index
+    roll.value = score
+
+    roll.bonus = this.defineBonusType(frame, roll)
     this.rolls.push(roll);
     return this
 }
 
-game.prototype.defineBonusType=function(frame,roll,rollListIndex){
+game.prototype.defineBonusType = function (frame, roll) {
     var STRIKE = 2
     var SPARE = 1
     var NONE = 0
-    if (frame.index>10){
+    if (frame.index > 10) {
         return NONE
-    } else if (roll[rollListIndex].value===10){
+    } else if (roll.value === 10 && roll.frameScoreIndex===1) {
         return STRIKE
-    } else if (frame.total===10 && roll[rollListIndex].frameScoreIndex===2){
+    } else if (frame.total === 10 && roll.frameScoreIndex === 2) {
         return SPARE
     } else {
         return NONE
     }
-   
+
 }
 
-game.prototype,calculateGrandTotal=function(){
-    this.rolls.forEach((roll,i)=>{
-        var currentRoll=(i+1).toString();
-        var nextRoll=(i+2).toString();
-        var secondNextRoll=(i+3).toString();
-        if (roll[currentRoll].frame<11){
-            //console.log(roll[currentRoll])
+game.prototype.createScoreList = function () {
+    var rollsLength = this.rolls.length;
+    this.rolls.forEach((roll) => {
 
-            switch(roll[currentRoll].bonus){
+        if (roll.frame < 11) {
+
+            switch (roll.bonus) {
                 case 2:
-                 this.scoreList.push(
-                    roll[currentRoll].value,
-                    rolls[nextRoll].value,
-                    roll[secondNextRoll].value
-                )
+                    if (rollsLength - roll.rollListIndex >= 2) {
+                        var secondNextRoll = roll.rollListIndex + 1;
+                        return this.scoreList.push(
+                            roll.value,
+                            this.rolls[roll.rollListIndex].value,
+                            this.rolls[secondNextRoll].value
+                        )
+                    } else {
+                        return this.scoreList.push(roll.value)
+                    }
                 case 1:
-                this.scoreList.push(
-                    roll[currentRoll].value,
-                    rolls[nextRoll].value,
-                )
-                default:
-                this.scoreList.push(roll[currentRoll].value)
+                    if (rollsLength - roll.rollListIndex >= 1) {
+                        return this.scoreList.push(
+                            roll.value,
+                            this.rolls[roll.rollListIndex].value,
+                        )
+                    } else {
+                        return this.scoreList.push(roll.value)
+                    }
+                case 0:
+                    return this.scoreList.push(roll.value)
             }
-            
-
-        } 
-        return this
+        }
     })
-  
+    return this
 }
 
-var newGame=new game(["1 0","2 2","10","3 3","0 10","1 9","3 7","10","1 2","9 0"])
-newGame.mapScoresToFrames().calculateGrandTotal();
-//newGame.calculateGrandTotal();
-// newGame.createRollsList();
-// console.log(newGame.frames,newGame.rolls,newGame.rollNumberCounter);
-// newGame.rolls.forEach((el)=>{
-//     console.log(JSON.stringify(el))
-// })
-console.log(newGame.scoreList);
+game.prototype.calculateGrandTotal = function () {
+    this.grandTotal = this.scoreList.reduce((score1, score2) => {
+        return score1 + score2;
+    })
+}
+
+//300
+//var newGame = new game(["10", "10", "10", "10", "10", "10", "10", "10", "10", "10","10","10"])
+//78
+//var newGame = new game(["1 2","2 3","3 4","4 5","5 4", "6 3", "5 4", "7 2", "8 1", "9 0"])
+//96
+//var newGame = new game(["1 0", "2 2", "10", "3 3", "0 10", "1 9", "3 7", "10", "1 2", "9 0"])
+//111
+//var newGame = new game(["1 0","1 9","3 3","10","2 2","0 10","3 7","1 9","1 9","10","8 0"])
+var newGame = new game(["1 0","1 9","3 3","10","2 2","0 10","3 7","1 9","1 9","10","8 0"])
+newGame.mapScoresToFrames().createScoreList().calculateGrandTotal()
+
+newGame.rolls.forEach((el) => {
+    console.log(JSON.stringify(el))
+})
+console.log(newGame.scoreList, newGame.grandTotal);
