@@ -5,17 +5,22 @@ const game = function (scores) {
     this.scores = scores;
     this.scoreList = [];
     this.grandTotal = 0;
-    this.error = [];
+    this.errors = [];
 }
 game.prototype.doesErrorExits = function () {
-    if (this.error.length !== 0) {
+    if (this.errors.length !== 0) {
         return true
     } else {
         return false
     }
 }
 game.prototype.mapScoresToFrames = function () {
-    if (!this.doesErrorExits) {
+    if (this.scores.length > 12) {
+        this.errors.push("To instaniate a game,argument should be an array that has no more than 12 elements!")
+        return this
+    }
+
+    if (!this.doesErrorExits || this.scores.length > 12) {
         return this
     }
     this.scores.forEach((score, i) => {
@@ -31,7 +36,7 @@ game.prototype.mapScoresToFrames = function () {
             if (!isNaN(parsedEl) && i < 2) {
                 return parseInt(el)
             } else {
-                this.error.push(score + ' has non numerical value(s) result will be wrong')
+                this.errors.push(score + ' has non numerical value(s) result will be wrong')
                 return this
             }
 
@@ -121,9 +126,9 @@ game.prototype.createScoreList = function () {
 
 game.prototype.calculateGrandTotal = function () {
     if (this.scoreList.length !== 0) {
-    this.grandTotal = this.scoreList.reduce((score1, score2) => {
-        return score1 + score2;
-    })
+        this.grandTotal = this.scoreList.reduce((score1, score2) => {
+            return score1 + score2;
+        })
     } else {
         return this
     }
