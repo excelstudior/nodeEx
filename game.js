@@ -1,26 +1,50 @@
-var game = function (scores) {
+const game = function (scores) {
     this.frames = [];
     this.rolls = []
     this.rollNumberCounter = 0;
     this.scores = scores;
     this.scoreList = [];
     this.grandTotal = 0;
+    this.error = [];
 }
-
+game.prototype.doesErrorExits = function () {
+    if (this.error.length !== 0) {
+        return true
+    } else {
+        return false
+    }
+}
 game.prototype.mapScoresToFrames = function () {
+    if (!this.doesErrorExits) {
+        return this
+    }
     this.scores.forEach((score, i) => {
+
+        let bonusRoll = 11;
         i++;
-        var frame = {}
-        // frame.total=score.split(' ').reduce((el1,el2)=>{
-        //     return parseInt(el1)+parseInt(el2)
-        // })
-        frame.rolls = score.split(' ').map((el) => {
-            return parseInt(el)
+        let frame = {}
+
+        frame.rolls = score.split(' ').map((el, i) => {
+
+            el = el.trim();
+            let parsedEl = parseInt(el);
+            if (!isNaN(parsedEl) && i < 2) {
+                return parseInt(el)
+            } else {
+                this.error.push(score + ' has non numerical value(s) result will be wrong')
+                return this
+            }
+
         })
         frame.total = frame.rolls.reduce((roll1, roll2) => {
             return roll1 + roll2
         })
-        frame.index = i;
+        if (i < 11) {
+            frame.index = i;
+        } else {
+            frame.index = bonusRoll
+        }
+
         frame.rolls.forEach((el, i) => {
             this.createRollsList(frame, el, i + 1);
         })
@@ -31,12 +55,12 @@ game.prototype.mapScoresToFrames = function () {
 }
 
 game.prototype.createRollsList = function (frame, score, index) {
-    var roll = {};
+    let roll = {};
 
     this.rollNumberCounter++;
     roll.rollListIndex = this.rollNumberCounter;
     roll.frame = frame.index;
-    roll.frameScoreIndex = index
+    roll.rollFrameIndex = index
     roll.value = score
 
     roll.bonus = this.defineBonusType(frame, roll)
@@ -45,14 +69,14 @@ game.prototype.createRollsList = function (frame, score, index) {
 }
 
 game.prototype.defineBonusType = function (frame, roll) {
-    var STRIKE = 2
-    var SPARE = 1
-    var NONE = 0
+    let STRIKE = 2
+    let SPARE = 1
+    let NONE = 0
     if (frame.index > 10) {
         return NONE
-    } else if (roll.value === 10 && roll.frameScoreIndex===1) {
+    } else if (roll.value === 10 && roll.rollFrameIndex === 1) {
         return STRIKE
-    } else if (frame.total === 10 && roll.frameScoreIndex === 2) {
+    } else if (frame.total === 10 && roll.rollFrameIndex === 2) {
         return SPARE
     } else {
         return NONE
@@ -61,7 +85,7 @@ game.prototype.defineBonusType = function (frame, roll) {
 }
 
 game.prototype.createScoreList = function () {
-    var rollsLength = this.rolls.length;
+    let rollsLength = this.rolls.length;
     this.rolls.forEach((roll) => {
 
         if (roll.frame < 11) {
@@ -69,7 +93,7 @@ game.prototype.createScoreList = function () {
             switch (roll.bonus) {
                 case 2:
                     if (rollsLength - roll.rollListIndex >= 2) {
-                        var secondNextRoll = roll.rollListIndex + 1;
+                        let secondNextRoll = roll.rollListIndex + 1;
                         return this.scoreList.push(
                             roll.value,
                             this.rolls[roll.rollListIndex].value,
@@ -96,9 +120,14 @@ game.prototype.createScoreList = function () {
 }
 
 game.prototype.calculateGrandTotal = function () {
+    if (this.scoreList.length !== 0) {
     this.grandTotal = this.scoreList.reduce((score1, score2) => {
         return score1 + score2;
     })
+    } else {
+        return this
+    }
+
 }
 
 //300
@@ -109,10 +138,14 @@ game.prototype.calculateGrandTotal = function () {
 //var newGame = new game(["1 0", "2 2", "10", "3 3", "0 10", "1 9", "3 7", "10", "1 2", "9 0"])
 //111
 //var newGame = new game(["1 0","1 9","3 3","10","2 2","0 10","3 7","1 9","1 9","10","8 0"])
-var newGame = new game(["1 0","1 9","3 3","10","2 2","0 10","3 7","1 9","1 9","10","8 0"])
-newGame.mapScoresToFrames().createScoreList().calculateGrandTotal()
 
-newGame.rolls.forEach((el) => {
-    console.log(JSON.stringify(el))
-})
-console.log(newGame.scoreList, newGame.grandTotal);
+module.exports.game = game;
+
+// var newGame = new game(["1 0", "1 9", "3 3", "10", "2 2", "0 10", "3 7", "1 9", "1 9", "10", "8 0"])
+
+// newGame.mapScoresToFrames().createScoreList().calculateGrandTotal()
+
+// newGame.rolls.forEach((el) => {
+//     console.log(JSON.stringify(el))
+// })
+// console.log(newGame.scoreList, newGame.grandTotal);
