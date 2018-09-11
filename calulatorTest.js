@@ -11,80 +11,144 @@
 // console.log(cd,isNaN(cd))
 
 let fomula = []
-//let usedElement=[]
 
-const ADD = function (a, b) {
-    return a + b
+const addOrSubtract = function (numbersAndOperators) {
+    return numbersAndOperators.reduce(function (result, element, index) {
+        if (numbersAndOperators.length===1&& isNaN(element)===false){
+            result.subTotal=element
+            return result
+        }
+        if (isNaN(element)) {
+            switch (element) {
+                case 'ADD':
+                    if (result.usedElementsIndex.indexOf(index - 1) < 0) {
+                        result.usedElementsIndex.push(index - 1, index, index + 1)
+                        result.subTotal = numbersAndOperators[index - 1] + numbersAndOperators[index + 1]
+                        return result
+                    } else {
+                        result.usedElementsIndex.push(index, index + 1)
+                        result.subTotal = result.subTotal + numbersAndOperators[index + 1]
+                        return result
+                    }
+
+                case 'SUBTRACT':
+                    if (result.usedElementsIndex.indexOf(index - 1) < 0) {
+                        result.usedElementsIndex.push(index - 1, index,index + 1)
+                        result.subTotal = numbersAndOperators[index - 1] - numbersAndOperators[index + 1]
+                        return result
+                    } else {
+                        result.usedElementsIndex.push(index, index + 1)
+                        result.subTotal = result.subTotal - numbersAndOperators[index + 1]
+                        return result
+                    }
+
+                default:
+                    return result
+            }
+        } else {
+            return result
+        }
+    }, { usedElementsIndex: [], subTotal: 0 })
 }
-const SUBTRCT = function (a, b) {
-    if (a > b) {
-        return a - b
-    } else {
-        return b - a
-    }
-}
-const MULTIPILE = function (a, b) {
-    return a * b
-}
-const DIVIDE = function (a, b) {
-    return a / b
+
+const multipleOrDivide = function (numbersAndOperators) {
+    return numbersAndOperators.reduce(function (result, element, index) {
+        if (numbersAndOperators.length===1&& isNaN(element)===false){
+            result.subTotal=element
+            return result
+        }
+        if (isNaN(element)) {
+            switch (element) {
+                case 'MULTIPILE':
+                    if (result.usedElementsIndex.indexOf(index - 1) < 0) {
+                        result.usedElementsIndex.push(index - 1, index, index + 1)
+                        result.subTotal = numbersAndOperators[index - 1] * numbersAndOperators[index + 1]
+                        return result
+                    } else {
+                        result.usedElementsIndex.push(index, index + 1)
+                        result.subTotal = result.subTotal * numbersAndOperators[index + 1]
+                        return result
+                    }
+
+                case 'DIVIDE':
+                    if (result.usedElementsIndex.indexOf(index - 1) < 0) {
+                        result.usedElementsIndex.push(index - 1, index, index + 1)
+                        result.subTotal = numbersAndOperators[index - 1] / numbersAndOperators[index + 1]
+                        return result
+                    } else {
+                        result.usedElementsIndex.push(index, index + 1)
+                        result.subTotal = result.subTotal / numbersAndOperators[index + 1]
+                        return result
+                    }
+
+                default:
+                    return result
+            }
+        } else {
+            return result
+        }
+    }, { usedElementsIndex: [], subTotal: 0 })
 }
 
 fomula.push(12);
 fomula.push('MULTIPILE')
 fomula.push(21)
+fomula.push('DIVIDE')
+fomula.push(21)
 fomula.push('ADD')
+fomula.push(21)
+fomula.push('SUBTRACT')
 fomula.push(21)
 fomula.push('ADD')
 fomula.push(27)
+fomula.push('ADD')
+fomula.push(21)
 fomula.push('DIVIDE')
 fomula.push(9)
 
 
 
 console.log(fomula)
-// let result = fomula.reduce(function (newObject, element, index) {
-//     if (newObject.usedElement.indexOf(element) < 0) {
-//         if (isNaN(element)&&(element==='ADD'||element==='SUBTRCT')) {
-//             if(newObject.usedElement.indexOf(fomula[index-1])<0){
-//                 newObject.usedElement.push(fomula[index - 1], element, fomula[index + 1])
-//                 if (element==='ADD'||element==='SUBTRCT'){
-//                     element(fomula[index-1],fomula[index+1])
-//                 }
-//             } else {
-//                 newObject.usedElement.push(element, fomula[index + 1])
-//             }
-            
-//         } else {
-//             newObject.numericElement.push(element)
-//         }
-//     } else {
-//         newObject.numericElement.push(element)
-//     }
 
-//     return newObject
-// }, {  "addOrSubtractIndex": [] })
-//console.log(result)
+let addOrSubtractIndex = fomula.reduce(function (result, element, index) {
 
-let addOrSubtractIndex=fomula.reduce(function(result,element,index){
+    if (result.usedElementsIndex.indexOf(index) < 0) {
+        if ((element === 'ADD' || element === 'SUBTRACT')) {
+            result.temp.operator = element;
+           // result.temp.index = index;
+            result.steps.push(result.temp);
+            result.temp = { elements: [] }
 
-    if (result.usedElements.indexOf(element)<0){
-        if (isNaN(element)&&(element==='ADD'||element==='SUBTRCT')) {
-            let node={}
-            node.operator=element
-            node.index=index
-            let newLength=result.steps.push(node);
-            if (result.steps.length>1){
-             let partial=fomula.slice((result.steps[newLength-2].index)+1,index)
-               result.steps[newLength-1].elements=partial
-               result.usedElements.concat(partial)
-            } else {
-                let partial=fomula.slice(0,index)
-                result.steps[0].elements=partial
-                result.usedElements.concat(partial)
-            }
-    }} 
+        } else {
+
+            result.temp.elements.push(element);
+
+            result.usedElementsIndex.push(index)
+        }
+    } else {
+        return result
+    }
+    if (index === fomula.length - 1) {
+        result.steps.push(result.temp)
+    }
     return result
-},{steps:[],usedElements:[]})
+}, { steps: [], usedElementsIndex: [], temp: { elements: [] } })
 
-console.log(addOrSubtractIndex.steps)
+
+
+console.log(addOrSubtractIndex.steps, addOrSubtractIndex.temp)
+
+let newStepsArray=addOrSubtractIndex.steps.reduce(function(result,el){
+    let newStep={}
+    newStep.operator=el.operator?el.operator:''
+    newStep.subTotal=multipleOrDivide(el.elements).subTotal
+    result.push(newStep.subTotal,newStep.operator)
+    return result
+},[])
+
+// let subtotal = multipleOrDivide((addOrSubtractIndex.steps[1].elements))
+// console.log(subtotal)
+// console.log(newSteps)
+console.log(newStepsArray)
+let finalResult=addOrSubtract(newStepsArray)
+console.log(finalResult)
