@@ -15,6 +15,12 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/stream_promise.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "role_async_v2",
+            "program": "${workspaceFolder}/role_async_v2.js"
         }
     ]
 }
