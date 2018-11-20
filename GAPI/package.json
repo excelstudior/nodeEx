@@ -1,0 +1,16 @@
+{
+  "name": "gapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "auth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "googleapis": "^35.0.0",
+    "opn": "^5.4.0"
+  }
+}
