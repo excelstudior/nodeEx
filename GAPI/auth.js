@@ -14,7 +14,7 @@
 'use strict';
 
 // [START main_body]
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 const express = require('express');
 const opn = require('opn');
 const path = require('path');
@@ -22,7 +22,7 @@ const fs = require('fs');
 
 const keyfile = path.join(__dirname, 'credentials.json');
 const keys = JSON.parse(fs.readFileSync(keyfile));
-const scopes = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive'];
+const scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'];
 
 // Create an oAuth2 client to authorize the API call
 const client = new google.auth.OAuth2(
@@ -54,21 +54,22 @@ app.get('/oauth2callback', (req, res) => {
     res.send('Authentication successful! Please return to the console.');
     //server.close();
     //listMajors(client);
-    listFiles(client)
-   // console.log('dddd')
+    //listFiles(client)
+    listFolders(client)
+    // console.log('dddd')
   });
 });
 
-app.get('/files',(req,res)=>{
-    console.log('In')
-    listFiles(client)
-    console.log('Out')
-    res.send('view files in console!')
+app.get('/files', (req, res) => {
+  console.log('In')
+  listFiles(client)
+  console.log('Out')
+  res.send('view files in console!')
 })
 
 const server = app.listen(3000, () => {
   // open the browser to the authorize url to start the workflow
-  opn(this.authorizeUrl, {wait: false});
+  opn(this.authorizeUrl, { wait: false });
 });
 
 /**
@@ -85,7 +86,7 @@ function listMajors(auth) {
     },
     (err, res) => {
       if (err) {
-          console.log(err)
+        console.log(err)
         console.error('The API returned an error.');
         throw err;
       }
@@ -104,22 +105,44 @@ function listMajors(auth) {
 }
 
 function listFiles(auth) {
-    const drive = google.drive({version: 'v3', auth});
-    drive.files.list({
-      pageSize: 10,
-      fields: 'nextPageToken, files(id, name,mimeType)',
-    }, (err, res) => {
-      if (err) return console.log('The API returned an error: ' + err);
-      const files = res.data.files;
-      console.log(res.data)
-      if (files.length) {
-        console.log('Files:');
-        files.map((file) => {
-          console.log(`${file.name} (${file.id}) (${file.mimeType})`);
-        });
-      } else {
-        console.log('No files found.');
-      }
-    });
-  }
+  const drive = google.drive({ version: 'v3', auth });
+  drive.files.list({
+    pageSize: 10,
+    fields: 'nextPageToken, files(id, name,mimeType)',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const files = res.data.files;
+    console.log(res.data)
+    if (files.length) {
+      console.log('Files:');
+      files.map((file) => {
+        console.log(`${file.name} (${file.id}) (${file.mimeType})`);
+      });
+    } else {
+      console.log('No files found.');
+    }
+  });
+}
+
+function listFolders(auth) {
+  const drive = google.drive({ version: 'v3', auth });
+  drive.files.list({
+    fields: 'nextPageToken, files(id, name,mimeType)',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const files = res.data.files;
+    //console.log(res.data)
+    if (files.length) {
+    //  console.log('Files:');
+      files.map((file) => {
+        if (file.mimeType === 'application/vnd.google-apps.folder' && file.name==='NewFolder') {
+          console.log(`${file.name} (${file.id}) (${file.mimeType})`)
+        }
+
+      });
+    } else {
+      console.log('No files found.');
+    }
+  });
+}
 // [END main_body]
