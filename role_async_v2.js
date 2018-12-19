@@ -7,7 +7,13 @@ let roles = {
         can: ['write', {
             name: 'edit',
             when: function (params) {
-                return params.user.id === params.post.owner;
+                return new Promise ((resolve,reject)=>{
+                    if(params.user.id === params.post.owner){
+                        resolve(true);
+                    } else {
+                        reject(false)
+                    }
+                })
             }
         }],
         inherits: ['guest']
@@ -53,7 +59,9 @@ class RBAC {
         this.roles = map;
     }
 
-    can(role, operation) {
+    can(role, operation,params) {
+      
+
         return new Promise((resolve, reject) => {
             //Check if parameters are string
             if (typeof role !== 'string') {
@@ -70,38 +78,34 @@ class RBAC {
             }
 
             // IF this operation is not defined at current level try higher
-            // if (!_role.can[operation]) {
-            //     // If no parents reject
-            //     if (!_role.inherits) {
-            //         return reject(false);
-            //     }
-            //     // Return if any parent resolves true or all reject
-            //     return 
-            // }
+            if (!_role.can[operation]) {
+                // If no parents reject
+                if (!_role.inherits) {
+                    return reject(false);
+                }
+                // Return if any parent resolves true or all reject
+                return _role.inherits.map(parent=>this.can(parent,operation))
+                        .then(resolve(true),reject(false))
+            }
 
             if (_role.can[operation] === 1) {
                 console.log(_role.can[operation])
-                resolve(true)
+                return resolve(true)
             }
-            //    else {
-            //        return reject(false)
-            //    }
+           
             // Operation is conditional, run async function
             if (typeof _role.can[operation] === 'function') {
-                // $role.can[operation](params, function (err, result) {
-                //     if(err) {
-                //         return reject(err);
-                //     }
-                //     if(!result) {
-                //         return reject(false);
-                //     }
-                //     resolve(true);
-                // });
-                //return;
-                return resolve('function');
-            } else {
-                return reject('it is not a function')
+                if(params===undefined){
+                    throw new Error("Missing parameters")
+                }
+                _role.can[operation](params)
+                .then((res)=>{
+                    return resolve(true)
+                },(rej)=>{
+                    return reject(false)
+                })
             }
+            reject(false)
         })
 
 
@@ -118,7 +122,7 @@ roleModule.can(1, 'eya')
         console.log(reason)
     })
     .catch(err => console.log(err))
-
+//should return Undefined Role
 roleModule.can('yea', 'eya')
     .then((value) => {
         console.log(value)
@@ -126,7 +130,7 @@ roleModule.can('yea', 'eya')
         console.log(reason)
     })
     .catch(err => console.log(err))
-
+//should return false
 roleModule.can('guest', 'r3ead')
     .then((value) => {
         console.log(value)
@@ -134,4 +138,28 @@ roleModule.can('guest', 'r3ead')
         console.log(reason)
     })
     .catch(err => console.log(err))
+//should return true
+roleModule.can('writer', 'read')
+    .then((value) => {
+        console.log(value)
+    }, (reason) => {
+        console.log(reason)
+    })
+    .catch(err => console.log(err))
 
+// should run the function and return true or false
+roleModule.can('writer', 'edit')
+    .then((value) => {
+        console.log(value)
+    }, (reason) => {
+        console.log(reason)
+    })
+    .catch(err => console.log(err))
+// should run the function and return true or false
+roleModule.can('writer', 'edit', {user:{id:"Jim"}, post:{owner:"Jim"}})
+    .then((value) => {
+        console.log(value)
+    }, (reason) => {
+        console.log(reason)
+    })
+    .catch(err => console.log(err))
