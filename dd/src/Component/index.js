@@ -1,17 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Bin from  './Bin/container';
+import AddEntityCtrl from './Common/AddEntity';
 import { COMPONENT_TYPE_BIN,COMPONENT_TYPE_ITEM } from './constant';
-import { updatePendingObject,addBin,resetPendingObject,toggleLockMasterBin }from './action'
+import { updatePendingObject,addBin,addItem,resetPendingObject,toggleLockMasterBin }from './action'
 
-const AddEntityCtrl =({add,onTextChange,entityName,inputValue})=>{
-    return (
-        <div>
-            <input name={entityName} onChange={onTextChange} value={inputValue}/>
-            <button name={entityName} onClick={add}>{'Add '+entityName}</button>
-        </div>
-    )
-}
 
 class Board extends React.Component {
     constructor(props, context) {
@@ -57,22 +50,7 @@ class Board extends React.Component {
         
     }
 
-    addItem =()=>{
-        console.log('Add item')
-        let pendingItemName=this.getPendingObjName(COMPONENT_TYPE_ITEM)
-        if(pendingItemName==''||pendingItemName==undefined) {
-            alert("Item name can't be empty")
-            return
-        } else if (!this.doesEntityExist(COMPONENT_TYPE_ITEM,pendingItemName)){
-            let pendingItem={}
-            pendingItem.name=pendingItemName;
-            console.log(pendingItem)
-          //  this.props.addBin(pendingBin,COMPONENT_TYPE_ITEM)
-        } else {
-            alert('Item name exist')
-            return
-        }
-    }
+   
     toggleLockMasterBin=()=>{
         this.props.toggleLock();
     }
@@ -93,17 +71,12 @@ class Board extends React.Component {
 
     render() {
         let pendingBinName=this.getPendingObjName(COMPONENT_TYPE_BIN);
-        let pendingItemName=this.getPendingObjName(COMPONENT_TYPE_ITEM)
         return (
             <div> 
                 <AddEntityCtrl onTextChange={this.updatePendingChange} 
                                 inputValue={pendingBinName !=undefined ? pendingBinName :''}
                                 add={this.addBin} 
                                 entityName={COMPONENT_TYPE_BIN}/>
-                <AddEntityCtrl onTextChange={this.updatePendingChange} 
-                                inputValue={pendingItemName !=undefined ? pendingItemName :''}
-                                add={this.addItem} 
-                                entityName={COMPONENT_TYPE_ITEM}/>
                 {Object.keys(this.props.masterBin).length>0 
                     && this.renderLockMasterBinButton(this.toggleLockMasterBin)}
                 {this.props.bins.length>0 
@@ -132,6 +105,9 @@ const mapDispatchToProps =(dispatch)=>( {
         addBin:( bin,type ) => {
                             dispatch( addBin(bin) )
                             dispatch (resetPendingObject(type))},
+        addItem:( item,type ) => {
+                                dispatch( addItem(item) )
+                                dispatch (resetPendingObject(type))},
                             
       
     

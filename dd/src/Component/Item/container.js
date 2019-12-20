@@ -10,7 +10,7 @@ class Item extends React.Component {
 
     render() {
         return (
-            <div></div>
+        <span>{this.props.name}</span>
         );
     }
 }

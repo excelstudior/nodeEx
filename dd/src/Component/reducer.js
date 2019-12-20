@@ -1,5 +1,5 @@
 import { UPDATE_PENGDING_OBJECT,
-    ADD_BIN,
+    ADD_BIN,ADD_ITEM,
     RESET_PENDING_OBJECT,
     SET_MASTER_BIN,
     TOOGLE_LOCK_MASTER_BIN } from './constant';
@@ -22,6 +22,12 @@ const common = ( state=initialState,action ) =>{
             bin.isMaster = false;
             bin.capsules = [];
             return { ...state,bins:[...state.bins,bin]};
+
+        case ADD_ITEM:
+            let item=action.payload
+            //add some default value to the bin
+            item.amount = 0;
+            return { ...state,items:[...state.items,item]};
         case RESET_PENDING_OBJECT:
             let objectType=action.payload
             let updatedPendingObjs=state.pendingObjs;

@@ -12,7 +12,10 @@ export const addBin = ( bin )=>({
     type:ADD_BIN,
     payload:bin
 })
-
+export const addItem = (item)=>({
+    type:ADD_ITEM,
+    payload:item
+})
 export const resetPendingObject = (objectType)=>({
     type:RESET_PENDING_OBJECT,
     payload:objectType
@@ -24,8 +27,4 @@ export const setMasterBin = (bin)=>({
 
 export const toggleLockMasterBin = () =>({
     type:TOOGLE_LOCK_MASTER_BIN
-})
-export const addItem = (item)=>({
-    type:ADD_ITEM,
-    payload:item
 })
