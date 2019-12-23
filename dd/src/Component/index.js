@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Bin from  './Bin/container';
 import AddEntityCtrl from './Common/AddEntity';
+import './index.css';
+import Add from '../../Static/Image/add48.png';
 import { COMPONENT_TYPE_BIN,COMPONENT_TYPE_ITEM } from './constant';
 import { updatePendingObject,addBin,addItem,resetPendingObject,toggleLockMasterBin }from './action'
 
@@ -76,14 +78,17 @@ class Board extends React.Component {
                 <AddEntityCtrl onTextChange={this.updatePendingChange} 
                                 inputValue={pendingBinName !=undefined ? pendingBinName :''}
                                 add={this.addBin} 
+                                image={Add}
                                 entityName={COMPONENT_TYPE_BIN}/>
                 {Object.keys(this.props.masterBin).length>0 
                     && this.renderLockMasterBinButton(this.toggleLockMasterBin)}
-                {this.props.bins.length>0 
-                    && this.props.bins.map((bin,i)=>{
-                    return <Bin name={bin.name} key={i} self={bin}/>
-                })
-                }            
+                <div className='bins'>
+                    {this.props.bins.length>0 
+                        && this.props.bins.map((bin,i)=>{
+                        return <Bin name={bin.name} key={i} self={bin}/>
+                    })
+                    }
+                </div>            
             </div>
         );
     }

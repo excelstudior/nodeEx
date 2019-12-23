@@ -80,7 +80,7 @@ const config={
                 use:{
                     loader:'file-loader'
                     ,options:{
-                        outputPath:'images'
+                        outputPath:'Static/Images'
                     }
                 }
                 // loader:[
@@ -93,7 +93,9 @@ const config={
     plugins:[
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin([
-            { from: './src/favicon.ico' , to: path.resolve(__dirname+'/dist'), }
+            { from: './src/favicon.ico' , to: path.resolve(__dirname+'/dist'), },
+           // { from: './Static/Image' , to: path.resolve(__dirname+'/dist/Static/Image'), }
+
         ]),
         new htmlWebpackPlugin({
             filename:'index.html',

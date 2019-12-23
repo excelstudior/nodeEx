@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { setMasterBin } from '../action';
 import AddEntityCtrl from '../Common/AddEntity';
+import './bin.css';
+import Add from '../../../Static/Image/add48.png';
 import { COMPONENT_TYPE_BIN,COMPONENT_TYPE_ITEM } from '../constant';
 import { updatePendingObject,addBin,addItem,resetPendingObject,toggleLockMasterBin }from '../action'
 
@@ -68,12 +70,13 @@ class Bin extends React.Component {
         return <AddEntityCtrl onTextChange={this.updatePendingChange} 
                                 inputValue={pendingItemName !=undefined ? pendingItemName :''}
                                 add={this.addItem} 
+                                image={Add}
                                 entityName={COMPONENT_TYPE_ITEM}/>
     }
     render() {
         console.log(this.props.self.isMaster)
         return (
-            <div>
+            <div className='bin'>
                 {this.props.self.isMaster && this.renderAddItemCtrl()}
                 <p>{this.props.name}</p>
                 {this.props.children}

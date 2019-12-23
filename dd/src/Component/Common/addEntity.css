@@ -1,0 +1,26 @@
+.entity{
+    display: flex;
+    flex-direction: row ;
+    justify-content: center;
+    height: inherit;
+    margin: 6px 12px;
+}
+.entity img{
+    height: inherit;
+}
+.entity-content{
+    display: none;
+}
+.entity-content-show{
+    display: inherit;
+}
+.entity input{
+    font-size: 24px;
+    padding: 6px 12px;
+}
+.entity button{
+    margin:0px 6px;
+    background-color:#3498DB;
+    color:#fff;
+    border: none;
+}
