@@ -10,12 +10,11 @@ class AddEntity extends React.Component {
 
 
     editContent =()=>{
-        console.log(this.content.current.className)
         this.content.current.className='entity-content-show'
     }
 
     saveContent =()=>{
-        this.props.add()
+        this.props.add();
         this.content.current.className='entity-content'
     }
 

@@ -2,7 +2,10 @@ import { UPDATE_PENGDING_OBJECT,
     ADD_BIN,ADD_ITEM,
     RESET_PENDING_OBJECT,
     SET_MASTER_BIN,
-    TOOGLE_LOCK_MASTER_BIN } from './constant';
+    TOOGLE_LOCK_MASTER_BIN,
+    ADD_ITEM_TO_BIN,
+    UPDATE_ITEM_AMOUNT } from './constant';
+
 const initialState = { 
     items:[],
     bins:[],
@@ -48,6 +51,39 @@ const common = ( state=initialState,action ) =>{
             return { ...state,bins:newBins,masterBin };
         case TOOGLE_LOCK_MASTER_BIN:
             return { ...state,isMasterBinLocked:!state.isMasterBinLocked}
+        case ADD_ITEM_TO_BIN:
+            let saveitem=action.payload.item;
+            let toBin=action.payload.bin;
+            let capsules=[...toBin.capsules,saveitem];
+            let updatedBin={...toBin,capsules};
+            let newState={};
+            if (updatedBin.isMaster){
+                newState={...state,masterBin:updatedBin}
+            }
+            let bins=state.bins.map((bin)=>{
+                if(bin.name==toBin.name){
+                   return updatedBin;
+                }
+                return bin
+            })
+            return {...newState,bins}
+        case UPDATE_ITEM_AMOUNT:
+            let itemName=action.payload.item;
+            let amount=action.payload.amount;
+            let targetBin=action.payload.bin;
+            console.log(itemName,amount,targetBin);
+            let newCapsules=targetBin.capsules.map((capsule)=>{
+                if(capsule.name==itemName){
+                    capsule.amount=parseInt(capsule.amount)+parseInt(amount);
+                }
+                return capsule
+            })
+            targetBin={ ...targetBin,capsules:newCapsules }
+            
+            let updatedBins=state.bins.map((bin)=>{
+                return bin.name==targetBin.name ? targetBin : bin
+            })
+            return { ...state,bins:updatedBins}
         default: return state;
     }
 }

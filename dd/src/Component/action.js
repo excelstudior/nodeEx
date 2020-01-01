@@ -2,7 +2,9 @@ import { UPDATE_PENGDING_OBJECT,
     ADD_BIN,ADD_ITEM,
     RESET_PENDING_OBJECT,
     SET_MASTER_BIN, 
-    TOOGLE_LOCK_MASTER_BIN} from './constant';
+    TOOGLE_LOCK_MASTER_BIN,
+    ADD_ITEM_TO_BIN,
+    UPDATE_ITEM_AMOUNT} from './constant';
     
 export const updatePendingObject = ( details )=>({
     type:UPDATE_PENGDING_OBJECT,
@@ -27,4 +29,12 @@ export const setMasterBin = (bin)=>({
 
 export const toggleLockMasterBin = () =>({
     type:TOOGLE_LOCK_MASTER_BIN
+})
+export const addItemToBin = (item,bin) =>({
+    type:ADD_ITEM_TO_BIN,
+    payload:{item,bin}
+})
+export const updateItemAmount =(amount,item,bin)=>({
+    type:UPDATE_ITEM_AMOUNT,
+    payload:{ amount,item,bin }
 })

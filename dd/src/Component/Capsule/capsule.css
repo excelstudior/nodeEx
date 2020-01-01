@@ -1,0 +1,23 @@
+.capsule ul{
+    display: flex;
+    align-items: center;
+    margin: 6px;
+    padding: 4px 8px;
+    border: 1px solid black;
+
+}
+.capsule span{
+    margin: 6px ;
+}
+
+.capsule ul li:last-child{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: auto;
+    width: 16px;
+}
+
+.capsule img{
+    width: 16px;
+}

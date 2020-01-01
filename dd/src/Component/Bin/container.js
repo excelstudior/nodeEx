@@ -5,7 +5,43 @@ import AddEntityCtrl from '../Common/AddEntity';
 import './bin.css';
 import Add from '../../../Static/Image/add48.png';
 import { COMPONENT_TYPE_BIN,COMPONENT_TYPE_ITEM } from '../constant';
-import { updatePendingObject,addBin,addItem,resetPendingObject,toggleLockMasterBin }from '../action'
+import { updatePendingObject,addItem,resetPendingObject,addItemToBin }from '../action'
+import Capsule from '../Capsule/capsule';
+import { DropTarget } from 'react-dnd';
+import {TYPE_CAPSULE} from '../constant';
+
+const binTarget = {
+    hover( props,monitor,component ){
+        let targetBinName=props.name;
+        let sourceCapsule=monitor.getItem();
+        if (targetBinName == sourceCapsule.parent.name){           
+            return
+        }  
+        console.log('hover on ',props.name)
+        console.log(targetBinName)
+        console.log(sourceCapsule)
+        
+    },
+    drop ( props,monitor,component ){
+        
+        let targetBinName=props.name;
+        let sourceCapsule=monitor.getItem();
+        if (targetBinName == sourceCapsule.parent.name){
+            alert("Can't drop in the same bin")
+            return
+        }
+        console.log( 'drop at',props)
+        console.log( 'source item',monitor.getItem())
+    }
+}
+
+function collect (connect,monitor){
+    return{
+        connectDropTarget:connect.dropTarget(),
+        hovered:monitor.isOver(),
+        item:monitor.getItem()
+    }
+}
 
 class Bin extends React.Component {
     constructor(props, context) {
@@ -38,7 +74,7 @@ class Bin extends React.Component {
         return pendingObj[type]
     }
     addItem =()=>{
-        console.log('Add item')
+        
         let pendingItemName=this.getPendingObjName(COMPONENT_TYPE_ITEM)
         if (Object.keys(this.props.masterBin).length<0 && !this.props.isMasterBinLocked){
             alert('Please lock master bin')
@@ -50,8 +86,9 @@ class Bin extends React.Component {
         } else if (!this.doesEntityExist(COMPONENT_TYPE_ITEM,pendingItemName)){
             let pendingItem={}
             pendingItem.name=pendingItemName;
-            console.log(pendingItem)
-            this.props.addItem(pendingItem,COMPONENT_TYPE_ITEM)
+           
+            this.props.addItem(pendingItem,COMPONENT_TYPE_ITEM);
+            this.props.addItemToBin(pendingItem,this.props.self)
         } else {
             alert('Item name exist')
             return
@@ -74,13 +111,17 @@ class Bin extends React.Component {
                                 entityName={COMPONENT_TYPE_ITEM}/>
     }
     render() {
-        console.log(this.props.self.isMaster)
-        return (
+        const { connectDropTarget } =this.props;
+        return connectDropTarget(
             <div className='bin'>
                 {this.props.self.isMaster && this.renderAddItemCtrl()}
                 <p>{this.props.name}</p>
+                {this.props.self.capsules.length>0 &&
+                this.props.self.capsules.map((capsule,i)=>{
+                    return <Capsule key={i} item={capsule} parent={this.props.self}/>
+                })}
                 {this.props.children}
-                <button disabled={this.props.isMasterBinLocked} onClick={this.setMaster}>Set Master</button>
+                {(!this.props.isMasterBinLocked && !this.props.self.isMaster) && <button id='setMasterBin' onClick={this.setMaster}>Set Master</button> } 
             </div>
         );
     }
@@ -103,6 +144,7 @@ function mapDispatchToProps(dispatch) {
         addItem:( item,type ) => {
             dispatch( addItem(item) )
             dispatch (resetPendingObject(type))},
+        addItemToBin:(item,bin)=>{dispatch(addItemToBin(item,bin))}
     };
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Bin);
+export default connect(mapStateToProps,mapDispatchToProps)(DropTarget(TYPE_CAPSULE,binTarget,collect)(Bin));
