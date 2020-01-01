@@ -59,6 +59,8 @@ const common = ( state=initialState,action ) =>{
             let newState={};
             if (updatedBin.isMaster){
                 newState={...state,masterBin:updatedBin}
+            } else {
+                newState = {...state}
             }
             let bins=state.bins.map((bin)=>{
                 if(bin.name==toBin.name){

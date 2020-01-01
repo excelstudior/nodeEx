@@ -5,11 +5,18 @@ import AddEntityCtrl from '../Common/AddEntity';
 import './bin.css';
 import Add from '../../../Static/Image/add48.png';
 import { COMPONENT_TYPE_BIN,COMPONENT_TYPE_ITEM } from '../constant';
-import { updatePendingObject,addItem,resetPendingObject,addItemToBin }from '../action'
+import { updatePendingObject,addItem,resetPendingObject,addItemToBin,updateItemAmount }from '../action'
 import Capsule from '../Capsule/capsule';
 import { DropTarget } from 'react-dnd';
 import {TYPE_CAPSULE} from '../constant';
 
+
+function doesItemExistInBin(itemName,bin) {
+    let binItemNames= bin.capsules.map((capsule)=>{
+        return capsule.name
+    })
+    return binItemNames.indexOf(itemName)>-1
+}
 const binTarget = {
     hover( props,monitor,component ){
         let targetBinName=props.name;
@@ -17,9 +24,9 @@ const binTarget = {
         if (targetBinName == sourceCapsule.parent.name){           
             return
         }  
-        console.log('hover on ',props.name)
-        console.log(targetBinName)
-        console.log(sourceCapsule)
+        // console.log('hover on ',props.name)
+        // console.log(targetBinName)
+        // console.log(sourceCapsule)
         
     },
     drop ( props,monitor,component ){
@@ -30,8 +37,29 @@ const binTarget = {
             alert("Can't drop in the same bin")
             return
         }
+
+        let targetBin=props.self;
+        let droppedCapsuleName=sourceCapsule.item.name;
+        let sourceBin=sourceCapsule.parent;
         console.log( 'drop at',props)
         console.log( 'source item',monitor.getItem())
+        console.log( 'drop At Bin',targetBin)
+        console.log( 'dropped Capsule Name',droppedCapsuleName)
+        console.log( 'source Bin',sourceBin)
+
+        let existItem=doesItemExistInBin(droppedCapsuleName,targetBin);
+        console.log(existItem)
+        if (!existItem){
+            let newBinItem={};
+            newBinItem.name=droppedCapsuleName;
+            newBinItem.amount=1;
+            props.updateItemAmount(1,droppedCapsuleName,sourceBin,null)
+            props.addItemToBin(newBinItem,targetBin)
+            return
+            // let newCapsules=[...targetBin.capsules,newBinItem]
+            // targetBin={ ...targetBin,capsules:newCapsules}
+        }
+        props.updateItemAmount(1,droppedCapsuleName,sourceBin,targetBin)
     }
 }
 
@@ -144,7 +172,10 @@ function mapDispatchToProps(dispatch) {
         addItem:( item,type ) => {
             dispatch( addItem(item) )
             dispatch (resetPendingObject(type))},
-        addItemToBin:(item,bin)=>{dispatch(addItemToBin(item,bin))}
+        addItemToBin:(item,bin)=>{dispatch(addItemToBin(item,bin))},
+        updateItemAmount:(amount,itemname,sourceBin,targetBin)=> { dispatch(updateItemAmount(-(amount),itemname,sourceBin)) 
+                                                                    if (targetBin !=null){dispatch(updateItemAmount(amount,itemname,targetBin))}
+                                                                   }
     };
 }
 export default connect(mapStateToProps,mapDispatchToProps)(DropTarget(TYPE_CAPSULE,binTarget,collect)(Bin));

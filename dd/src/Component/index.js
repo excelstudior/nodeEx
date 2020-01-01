@@ -32,6 +32,7 @@ class Board extends React.Component {
         
     }
     getPendingObjName = (type) =>{
+        if (this.props.pendingObjs==undefined) return ''
         let pendingObj=this.props.pendingObjs;      
         return pendingObj[type]
     }

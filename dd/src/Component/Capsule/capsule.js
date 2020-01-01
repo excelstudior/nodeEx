@@ -29,6 +29,9 @@ const capsuleSource = {
         } else {
             return true
         }
+    },
+    endDrag(){
+        
     }
 }
 function collectionSource (connect,monitor){
@@ -49,7 +52,6 @@ class Capsule extends React.Component {
     }
 
     onAmountChange = (event) =>{
-        console.log(event.target.dataset);
         let amount=event.target.dataset.step;
         let name=event.target.dataset.itemname;
         this.props.updateItemAmount(amount,name,this.props.parent)
@@ -73,7 +75,7 @@ class Capsule extends React.Component {
                              src={DOWN} 
                              onClick={onItemAmountReduce} />
                     </li>
-                </ul>
+                </ul> 
                     
                     
             </div>)
