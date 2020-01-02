@@ -24,9 +24,7 @@ const binTarget = {
         if (targetBinName == sourceCapsule.parent.name){           
             return
         }  
-        // console.log('hover on ',props.name)
-        // console.log(targetBinName)
-        // console.log(sourceCapsule)
+
         
     },
     drop ( props,monitor,component ){
@@ -41,14 +39,9 @@ const binTarget = {
         let targetBin=props.self;
         let droppedCapsuleName=sourceCapsule.item.name;
         let sourceBin=sourceCapsule.parent;
-        console.log( 'drop at',props)
-        console.log( 'source item',monitor.getItem())
-        console.log( 'drop At Bin',targetBin)
-        console.log( 'dropped Capsule Name',droppedCapsuleName)
-        console.log( 'source Bin',sourceBin)
-
+       
         let existItem=doesItemExistInBin(droppedCapsuleName,targetBin);
-        console.log(existItem)
+
         if (!existItem){
             let newBinItem={};
             newBinItem.name=droppedCapsuleName;
@@ -56,8 +49,7 @@ const binTarget = {
             props.updateItemAmount(1,droppedCapsuleName,sourceBin,null)
             props.addItemToBin(newBinItem,targetBin)
             return
-            // let newCapsules=[...targetBin.capsules,newBinItem]
-            // targetBin={ ...targetBin,capsules:newCapsules}
+        
         }
         props.updateItemAmount(1,droppedCapsuleName,sourceBin,targetBin)
     }

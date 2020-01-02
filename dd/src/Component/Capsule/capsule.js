@@ -19,7 +19,6 @@ import { TYPE_CAPSULE,TYPE_BIN} from '../constant';
 
 const capsuleSource = {
     beginDrag(props){
-        console.log(props)
         return props;
     },
     canDrag(props,monitor){
